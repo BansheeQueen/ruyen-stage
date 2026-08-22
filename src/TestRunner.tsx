@@ -37,50 +37,66 @@ export const TestStageRunner = <StageType extends StageBase<InitStateType, ChatS
      This is the main thing you'll want to modify.
      ***/
     async function runTests() {
-        /*
-        await stage.setState({someKey: 'A new value, even!'});
-        refresh();
+       console.log("=== RUYEN TEST: CISZA SERCA PRZY 2/8 MANY ===");
 
-        const beforePromptResponse: Partial<StageResponse<ChatStateType, MessageStateType>> = await stage.beforePrompt({
-            ...DEFAULT_MESSAGE, ...{
-                anonymizedId: "0",
-                content: "Hello, this is what happens when a human sends a message, but before it's sent to the model.",
-                isBot: false
-            }
-        });
-        console.assert(beforePromptResponse.error == null);
-        refresh();
-        */
-        /***
-         "What is all of this nonsense with 'DEFAULT_MESSAGE'?" you may well ask.
-         The purpose of this is to future-proof your test runner.
-         The stage interface is designed to be forwards-compatible,
-            so that a stage with a certain library version will continue to work
-            even if new fields are added to any of the call/response objects.
-         But when new fields are added to the input objects, the code calling an
-            stage needs to be updated. Using DEFAULT_MESSAGE,
-            DEFAULT_INITIAL, DEFAULT_CHARACTER, DEFAULT_USER,
-            DEFAULT_LOAD_RESPONSE, and DEFAULT_RESPONSE
-            where relevant in your tests prevents a version bump
-            from breaking your test runner in many cases.
-         ***/
-        /*
-        const afterPromptResponse: Partial<StageResponse<ChatStateType, MessageStateType>> = await stage.afterResponse({
-            ...DEFAULT_MESSAGE, ...{
-            promptForId: null,
-            anonymizedId: "2",
-            content: "Why yes hello, and this is what happens when a bot sends a response.",
-            isBot: true}});
-        console.assert(afterPromptResponse.error == null);
-        refresh();
+  // Ustawiamy Val specjalnie na 2/8,
+  // żeby czar za 3 zszedł do 0 i uruchomił Znamię.
+  await stage.setState({
+    valerie: {
+      mana: 2,
+      maxMana: 8,
+      condition: "sprawna",
+      restraint: "brak",
+    },
 
-        const afterDelayedThing: Partial<StageResponse<ChatStateType, MessageStateType>> = await delayedTest(() => stage.beforePrompt({
-            ...DEFAULT_MESSAGE, ...{
-            anonymizedId: "0", content: "Hello, and now the human is prompting again.", isBot: false, promptForId: null
-        }}), 5);
-        console.assert(afterDelayedThing.error == null);
-        refresh();
-        */
+    kieran: {
+      heartCondition: "serce zatrzymane",
+      condition: "zdolny do działania",
+    },
+
+    scene: {
+      mode: "combat",
+      activeEnemies: 1,
+      light: "późne popołudnie",
+    },
+
+    rollQueue: [],
+    markQueue: [],
+
+    lastRoll: null,
+    lastMark: null,
+  });
+
+  refresh();
+
+  // Symulujemy wysłanie wiadomości gracza.
+  // Stage generuje tutaj prywatne k20 i k10.
+  const before = await stage.beforePrompt({
+    anonymizedId: "test-user",
+    content: "Valerie próbuje rzucić Ciszę Serca.",
+    isBot: false,
+    promptForId: null,
+  } as any);
+
+  console.log("BEFORE PROMPT:", before);
+
+  // Symulujemy odpowiedź MG.
+  // Mana ma zostać pobrana niezależnie od wyniku rzutu.
+  const after = await stage.afterResponse({
+    anonymizedId: "test-gm",
+    isBot: true,
+    promptForId: null,
+    content: `
+Valerie sięga magią w serce przeciwnika.
+
+[[RUYEN_CAST|Cisza Serca]]
+[[RUYEN_ROLL|VALERIE|Wola|Magia krwi i zmysłów|0|12]]
+`,
+  } as any);
+
+  console.log("AFTER RESPONSE:", after);
+
+  refresh();
     }
 
     useEffect(() => {
